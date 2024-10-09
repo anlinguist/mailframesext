@@ -1,0 +1,38 @@
+{
+    "name": "mail-frames",
+    "version": "1.0.0",
+    "description": "Mail Frames",
+    "main": "build.js",
+    "type": "module",
+    "scripts": {
+        "build": "bun build.js",
+        "copy-popup": "rsync -av --progress --exclude 'node_modules' --exclude 'dist' ../mfweb/ ./source/popup",
+        "copy-popupdeps": "rsync -av --progress ./source/popupdeps/ ./source/popup/",
+        "build-popup": "cd ./source/popup && npm install --save-dev @types/chrome && npm run build",
+        "prepare-popup": "npm run copy-popup && npm run copy-popupdeps && npm run build-popup"
+    },
+    "author": "Andrew Nelson",
+    "license": "MIT",
+    "devDependencies": {
+        "@babel/core": "^7.23.0",
+        "@babel/preset-env": "^7.22.20",
+        "@rollup/plugin-commonjs": "^26.0.1",
+        "@rollup/plugin-node-resolve": "^15.2.3",
+        "@rollup/plugin-terser": "^0.4.4",
+        "@rollup/plugin-typescript": "^11.1.6",
+        "@types/bun": "1.0.12",
+        "@types/chrome": "^0.0.272",
+        "cssnano": "^7.0.6",
+        "postcss-cli": "^11.0.0",
+        "rollup": "^2.79.1",
+        "rollup-plugin-delete": "^2.1.0",
+        "rollup-plugin-polyfill-node": "^0.13.0",
+        "rollup-plugin-postcss": "^4.0.2",
+        "rollup-plugin-styles": "^4.0.0",
+        "ts-migrate": "^0.1.35",
+        "typescript": "^5.4.3"
+    },
+    "dependencies": {
+        "firebase": "^10.13.2"
+    }
+}
