@@ -19,12 +19,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             const handleAuthStateChange = async () => {
+                console.log('Auth state changed');
                 if (currentUser) {
                     const result = await chrome.storage.local.get('signOut');
                     if (result.signOut) {
-                        console.log('signing out');
                         await chrome.storage.local.remove('signOut');
                         await auth.signOut();
+                        return;
                     }
                 }
                 setUser(currentUser);
