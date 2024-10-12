@@ -1,14 +1,15 @@
 import { MailFrames } from "../assets/MailFramesBaseCS";
 
-class MailFramesGoogle extends MailFrames {
-    static instance: MailFramesGoogle | null = null;
+class MailFramesITBL extends MailFrames {
+    static instance: MailFramesITBL | null = null;
 
     static getInstance() {
         if (this.instance === null) {
-            this.instance = new MailFramesGoogle();
+            this.instance = new MailFramesITBL();
         }
         return this.instance;
     }
+
 
     getButtonTargets() {
         let targets: NodeListOf<Element> = document.querySelectorAll('[role="textbox"]');
@@ -27,4 +28,4 @@ class MailFramesGoogle extends MailFrames {
     }
 }
 
-MailFramesGoogle.getInstance();
+MailFramesITBL.getInstance();

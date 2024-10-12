@@ -5,10 +5,10 @@ import '@mantine/core/styles.css';
 import { Button, ColorSchemeScript, MantineColorsTuple, MantineProvider, createTheme } from '@mantine/core';
 import { createHashRouter, RouterProvider } from 'react-router-dom';
 import RootLayout from './RootLayout';
-import { AuthProvider } from './Components/Contexts/AuthContext';
-// import { authLoader } from './loaders';
-// import Settings from './Components/Settings';
-// import Templates from './Components/Templates';
+import { AuthProvider, useAuth } from './Components/Contexts/AuthContext';
+import Templates from './Components/Templates';
+import { aboutLoader, templatesLoader } from './loaders';
+import About from './Components/About';
 
 const mfgreen: MantineColorsTuple = [
   '#f1f8ef',
@@ -50,35 +50,13 @@ const theme = createTheme({
   },
 });
 
-export const router = createHashRouter([
-  {
-    path: '/',
-    element: <RootLayout />,
-    children: [
-      {
-        index: true,
-        element: <MainContent />,
-      },
-      // {
-      //   path: 'templates',
-      //   element: <Templates />,
-      // },
-      // {
-      //   path: 'settings',
-      //   element: <Settings />,
-      //   loader: authLoader, // Protect this route
-      // },
-    ],
-  },
-]);
-
 function App() {
   return (
     <>
       <ColorSchemeScript defaultColorScheme="auto" />
       <MantineProvider defaultColorScheme='auto' theme={theme}>
         <AuthProvider>
-          <RouterProvider router={router} />
+          <MiddleApp />
         </AuthProvider>
       </MantineProvider>
     </>
@@ -86,3 +64,40 @@ function App() {
 }
 
 export default App
+
+function MiddleApp() {
+  const { user } = useAuth();
+  const CustomTemplatesLoader = async () => {
+    return templatesLoader(user);
+  };
+  const router = createHashRouter([
+    {
+      path: '/',
+      element: <RootLayout />,
+      children: [
+        {
+          index: true,
+          element: <MainContent />,
+        },
+        {
+          path: 'templates',
+          element: <Templates />,
+          loader: CustomTemplatesLoader,
+        },
+        {
+          path: 'about',
+          element: <About />,
+          loader: aboutLoader,
+        }
+        // {
+        //   path: 'settings',
+        //   element: <Settings />,
+        //   loader: authLoader, // Protect this route
+        // },
+      ],
+    },
+  ])
+  return (
+    <RouterProvider router={router} />
+  )
+}

@@ -38,7 +38,7 @@ class Builder {
         let contentScriptFiles = readdirSync(cs, { withFileTypes: true })
             .filter(dirent => dirent.isFile() && dirent.name.endsWith('.ts'))
             .map(dirent => `${cs}${dirent.name}`);
-        const configurations = [
+        let configurations = [
             // service worker + all modules
             {
                 input: ['./source/background/sw.ts'],
@@ -58,9 +58,14 @@ class Builder {
                     format: 'es',
                     entryFileNames: '[name].js'
                 }
-            },
-            {
-                input: contentScriptFiles,
+            }
+        ];
+
+        contentScriptFiles.map((file) => {
+            const fileName = file.split('/').pop();
+            const name = fileName.split('.')[0];
+            configurations.push({
+                input: file,
                 plugins: [
                     typescript({
                         tsconfig: './source/tsconfig.json',
@@ -76,11 +81,13 @@ class Builder {
                 ],
                 output: {
                     dir: './source/dist/content',
-                    format: 'es',
-                    entryFileNames: '[name].js',
+                    format: 'iife',
+                    entryFileNames: `${name}.js`,
+                    name: `${name}MailFramesImplementation`,
                 },
-            }
-        ];
+            });
+        });
+            
 
         try {
             for (const config of configurations) {
@@ -147,6 +154,7 @@ class Builder {
 
         this.startLoading("Copying source folder to /chrome.");
         const ignoreList = [
+            "MailFramesBaseCS.ts",
             "node_modules",
             "public",
             "src",
@@ -238,24 +246,30 @@ class Builder {
     execAsync(command, options = {}) {
         return new Promise((resolve, reject) => {
             const child = exec(command, options);
-
+            let stderr = '';  // Capture stderr output
+    
             if (this.verbose) {
                 child.stdout.pipe(process.stdout);
                 child.stderr.pipe(process.stderr);
+            } else {
+                // Collect stderr in case verbose mode is off
+                child.stderr.on('data', (data) => {
+                    stderr += data;
+                });
             }
-
+    
             child.on('exit', (code, signal) => {
                 if (code === 0) {
                     resolve();
                 } else {
-                    reject(new Error(`Exited with code ${code} and signal ${signal}`));
+                    reject(new Error(`Exited with code ${code} and signal ${signal}. Error: ${stderr.trim()}`));
                 }
             });
-
+    
             child.on('error', (error) => {
                 reject(error);
             });
-
+    
             process.on('SIGINT', () => {
                 child.kill();
                 this.terminateLoading();
@@ -263,7 +277,7 @@ class Builder {
             });
         });
     }
-
+    
     startLoading(message) {
         let i = 0;
         this.loadingInterval = setInterval(() => {

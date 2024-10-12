@@ -10,5 +10,5 @@
       "removeComments": true,
       "moduleResolution": "node"
     },
-    "include": ["./background", "./content", "./pages"]
+    "include": ["./background", "./content", "./pages", "assets/MailFramesBaseCS.ts"]
   }

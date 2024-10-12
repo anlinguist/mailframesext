@@ -5,8 +5,6 @@
         if (!allowedOrigins.includes(event.origin)) {
             return;
         }
-        console.log('Message received from', event.origin);
-        console.log('Message data:', event.data);
 
         const data = event.data;
 

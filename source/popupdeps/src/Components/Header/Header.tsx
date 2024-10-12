@@ -23,11 +23,11 @@ import {
 } from '@tabler/icons-react';
 import classes from './Header.module.css';
 import mflogofull from '/mflogo_full.svg';
-import { useAuth } from '../Contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, signOut } from 'firebase/auth/web-extension';
 import LoginButton from '../LoginButton';
 import { auth } from '../../services/firebase';
+import { useAuth } from '../Contexts/AuthContext';
 
 const fallback = {
   name: 'Jane Spoonfighter',
@@ -46,11 +46,16 @@ const tabs: Record<string, Tab> = {
     url: '/',
     protected: false,
   },
-  // templates: {
-  //   name: 'Templates',
-  //   url: '/templates',
-  //   protected: false,
-  // },
+  templates: {
+    name: 'Templates',
+    url: '/templates',
+    protected: false,
+  },
+  about: {
+    name: 'About',
+    url: '/about',
+    protected: false,
+  },
   // settings: {
   //   name: 'Settings',
   //   url: '/settings',
@@ -65,7 +70,6 @@ export default function Header() {
   const [activeTab, setActiveTab] = useState(location.pathname);
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
-
 
   useEffect(() => {
     if (location.pathname === '/popup/index.html') {
